@@ -1,6 +1,7 @@
 function SaleLookup_OnChange() {
     importSalesDate = Xrm.Page.getAttribute("new_importsalesdata").getValue();
     if (importSalesDate == true) {
+	DisableSalesInputs();
         var saleLookup = new Array();
         saleLookup = Xrm.Page.getAttribute("new_sale").getValue();
         
@@ -74,13 +75,53 @@ function retrieveProductFamilyCompleted(data, textStatus, XmlHttpRequest) {
 }
 
 function ContractType_OnChange() {
-    var contractType = Xrm.Page.getAttribute("new_agreementtype").getValue();
     initializeSalesData();
+    EnableOrDisableSalesInputs();
+    FilterSalesView();
+    AgreementType_onChange();
+}
 
-    if (contractType == "100000004") {// Long Term Agreement
-        Xrm.Page.getControl("new_sale").setDefaultView("37904EF4-5465-E611-838C-005056976E09");
+function FilterSalesView(){
+	var contractType = Xrm.Page.getAttribute("new_agreementtype").getValue();
+	// Long Term Agreement
+	if (contractType == "100000004") {
+		Xrm.Page.getControl("new_sale").setDefaultView("37904EF4-5465-E611-838C-005056976E09");
+	} 	
+	// Display spot type
+	if (contractType == "100000000" || contractType == "100000002") { 
+	    Xrm.Page.getControl("new_sale").setDefaultView("0ED57BDD-8959-E611-A56A-0050569738F0");
+	}
+	// Display quartely type
+	if (contractType == "100000001" || contractType == "100000003") { 
+	    Xrm.Page.getControl("new_sale").setDefaultView("AB8AE2D9-5465-E611-838C-005056976E09");
+	}
+}
 
-        Xrm.Page.ui.controls.get("new_account").setDisabled(false);
+function EnableOrDisableSalesInputs(){
+	EnableSalesInputs();
+	var importSalesDate = Xrm.Page.getAttribute("new_importsalesdata").getValue();
+	if (importSalesDate == true) {
+		var contractType = Xrm.Page.getAttribute("new_agreementtype").getValue();
+		if (contractType != "100000004") {// Long Term Agreement
+			DisableSalesInputs();
+		}
+	}
+}
+
+function DisableSalesInputs(){
+	Xrm.Page.ui.controls.get("new_account").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_destinationcountry").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_incoterm").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_effectivestartdate").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_shippingtolerance").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_paymentterm").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_totalquantity").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_product").setDisabled(true);
+	Xrm.Page.ui.controls.get("new_price").setDisabled(true);
+}
+
+function EnableSalesInputs(){
+	Xrm.Page.ui.controls.get("new_account").setDisabled(false);
         Xrm.Page.ui.controls.get("new_destinationcountry").setDisabled(false);
         Xrm.Page.ui.controls.get("new_incoterm").setDisabled(false);
         Xrm.Page.ui.controls.get("new_effectivestartdate").setDisabled(false);
@@ -89,29 +130,6 @@ function ContractType_OnChange() {
         Xrm.Page.ui.controls.get("new_totalquantity").setDisabled(false);
         Xrm.Page.ui.controls.get("new_product").setDisabled(false);
         Xrm.Page.ui.controls.get("new_price").setDisabled(false);
-    } else {
-        Xrm.Page.ui.controls.get("new_account").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_destinationcountry").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_incoterm").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_effectivestartdate").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_shippingtolerance").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_paymentterm").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_totalquantity").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_product").setDisabled(true);
-        Xrm.Page.ui.controls.get("new_price").setDisabled(true);
-        
-        // Display spot type
-        if (contractType == "100000000" || contractType == "100000002") {
-            Xrm.Page.getControl("new_sale").setDefaultView("0ED57BDD-8959-E611-A56A-0050569738F0");
-        }
-
-        // Display quartely type
-        if (contractType == "100000001" || contractType == "100000003") {
-            Xrm.Page.getControl("new_sale").setDefaultView("AB8AE2D9-5465-E611-838C-005056976E09");
-        }
-    }
-
-    AgreementType_onChange();
 }
 
 function SaleType_OnChange() {
