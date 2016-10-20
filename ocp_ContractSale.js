@@ -16,7 +16,7 @@ function SaleLookup_OnChange() {
 function retrieveSaleCompleted(data, textStatus, XmlHttpRequest) {
     //Get back the Sale JSON object
     if (data != null) {
-        var effectiveStartDate = moment.utc(parseInt(data["new_StartDate"].match(/\d+/)[0])).format();
+        var effectiveStartDate = new Date(data["new_StartDate"].match(/\d+/)[0] * 1);
         Xrm.Page.getAttribute("new_account").setValue([{ id: data["CustomerId"].Id, name: data["CustomerId"].Name, entityType: "account"}]);
         Xrm.Page.getAttribute("new_destinationcountry").setValue([{ id: data["new_country"].Id, name: data["new_country"].Name, entityType: "new_pays"}]);
         Xrm.Page.getAttribute("new_incoterm").setValue(data["new_FreightTerms"].Value);
